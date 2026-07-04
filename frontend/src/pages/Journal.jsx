@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 
 function Journal() {
@@ -54,7 +54,13 @@ function Journal() {
         </div>
 
         <div className="rounded-2xl bg-sky-50 p-6 text-sm text-sky-800">
-          Authentication is now protected and working. The next milestone will add journal creation and persistence.
+          Milestone 3 is now available. You can open the journal editor to draft your reflections, generate a spark idea, and save your current draft locally.
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link to="/editor" className="rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
+            Open journal editor
+          </Link>
         </div>
       </div>
     </div>
