@@ -8,6 +8,10 @@ function Layout() {
           <Link to="/" className="text-xl font-semibold text-primary-600 tracking-tight">
             Melonote
           </Link>
+          <nav className="flex items-center gap-4 text-sm text-gray-600">
+            <Link to="/home" className="hover:text-sky-600">Home</Link>
+            <Link to="/auth" className="hover:text-sky-600">Sign in</Link>
+          </nav>
         </div>
       </header>
 
