@@ -73,6 +73,11 @@ function Landing() {
       <div className="orb orb-2" />
       <div className="orb orb-3" />
 
+      {/* Top-left logo */}
+      <div className="fixed top-6 left-6 z-50">
+        <span className="text-2xl font-semibold text-gradient tracking-tight">Melonote</span>
+      </div>
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
         {/* Decorative floating elements */}
