@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 
 function Editor() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [blocks, setBlocks] = useState([{ id: 'user-1', role: 'user', content: '' }]);
   const [focusedBlock, setFocusedBlock] = useState('user-1');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [entryId, setEntryId] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const blockRefs = useRef({});
   const token = useMemo(() => localStorage.getItem('melonote-token'), []);
 
@@ -30,11 +33,40 @@ function Editor() {
   }, [navigate, token]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const selectedEntryId = params.get('entry');
+
+    if (selectedEntryId) {
+      setEntryId(selectedEntryId);
+      setIsReadOnly(true);
+      api.get(`/journal/entries/${selectedEntryId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(({ data }) => {
+          const entryMessages = data.entry.messages || [];
+          const entryBlocks = entryMessages.length > 0
+            ? entryMessages.flatMap((message, index) => {
+                const role = message.role === 'assistant' ? 'assistant' : 'user';
+                const blockId = `${role}-${index + 1}`;
+                return [{ id: blockId, role, content: message.content }];
+              })
+            : [{ id: 'user-1', role: 'user', content: data.entry.content || '' }];
+
+          setBlocks(entryBlocks);
+          setFocusedBlock(entryBlocks[entryBlocks.length - 1]?.id || 'user-1');
+        })
+        .catch(() => {
+          window.alert('Could not load that entry.');
+        });
+      return;
+    }
+
+    setIsReadOnly(false);
     const initialRef = blockRefs.current['user-1'];
     if (initialRef) {
       initialRef.focus();
     }
-  }, []);
+  }, [location.search, navigate, token]);
 
   function updateBlock(id, content) {
     setBlocks((current) => current.map((block) => (block.id === id ? { ...block, content } : block)));
@@ -129,15 +161,24 @@ function Editor() {
 
     setSaving(true);
     try {
-      await api.post('/journal/entries', {
-        title: 'Untitled entry',
-        content,
-        fullText,
-        messages,
-      });
+      if (entryId) {
+        await api.put(`/journal/entries/${entryId}`, {
+          title: 'Untitled entry',
+          content,
+          fullText,
+          messages,
+        });
+      } else {
+        await api.post('/journal/entries', {
+          title: 'Untitled entry',
+          content,
+          fullText,
+          messages,
+        });
+      }
 
       localStorage.setItem('melonote-final', JSON.stringify({ messages, fullText }));
-      window.alert('Entry saved successfully.');
+      window.alert(entryId ? 'Entry updated successfully.' : 'Entry saved successfully.');
       navigate('/journal', { replace: true });
     } catch (error) {
       console.error(error);
@@ -157,10 +198,10 @@ function Editor() {
           </div>
           <button
             onClick={handleFinish}
-            disabled={saving}
+            disabled={saving || isReadOnly}
             className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50"
           >
-            Finish entry
+            {isReadOnly ? 'Read only' : 'Finish entry'}
           </button>
         </div>
 
@@ -180,6 +221,7 @@ function Editor() {
                   }}
                   value={block.content}
                   onChange={(event) => {
+                    if (isReadOnly) return;
                     updateBlock(block.id, event.target.value);
                     resizeTextarea(event.target);
                   }}
@@ -187,6 +229,7 @@ function Editor() {
                   placeholder="Start writing here..."
                   spellCheck
                   rows={1}
+                  readOnly={isReadOnly}
                   className="w-full resize-none bg-transparent text-xl leading-8 text-slate-900 outline-none placeholder:text-slate-400"
                 />
               ) : (
@@ -195,7 +238,7 @@ function Editor() {
                 </div>
               )}
 
-              {block.role === 'assistant' && (
+              {block.role === 'assistant' && !isReadOnly && (
                 <button
                   type="button"
                   onClick={() => handleDeleteBlock(block.id)}
@@ -214,7 +257,7 @@ function Editor() {
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <button
             onClick={handleSparkIdea}
-            disabled={loading}
+            disabled={loading || isReadOnly}
             className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50"
           >
             {loading ? 'Thinking…' : 'Spark Idea'}

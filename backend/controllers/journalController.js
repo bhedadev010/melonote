@@ -53,8 +53,53 @@ async function getEntries(req, res) {
   }
 }
 
+async function getEntry(req, res) {
+  try {
+    const entry = await JournalEntry.findOne({ _id: req.params.id, user: req.user._id });
+
+    if (!entry) {
+      return res.status(404).json({ message: 'Entry not found' });
+    }
+
+    return res.json({ entry });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to fetch journal entry', error: error.message });
+  }
+}
+
+async function updateEntry(req, res) {
+  try {
+    const { title, content, fullText, messages } = req.body;
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: 'Entry content is required' });
+    }
+
+    const entry = await JournalEntry.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      {
+        title: title?.trim() || 'Untitled entry',
+        content: content.trim(),
+        fullText: fullText?.trim() || content.trim(),
+        messages: messages || [],
+      },
+      { new: true },
+    );
+
+    if (!entry) {
+      return res.status(404).json({ message: 'Entry not found' });
+    }
+
+    return res.json({ entry });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to update journal entry', error: error.message });
+  }
+}
+
 module.exports = {
   sparkIdea,
   createEntry,
   getEntries,
+  getEntry,
+  updateEntry,
 };

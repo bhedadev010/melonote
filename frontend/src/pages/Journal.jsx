@@ -65,13 +65,13 @@ function Journal() {
           ) : (
             <div className="mt-4 space-y-3">
               {entries.map((entry) => (
-                <div key={entry._id} className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <Link key={entry._id} to={`/editor?entry=${entry._id}`} className="block rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-sky-200 hover:bg-sky-50">
                   <p className="text-sm font-medium text-gray-700">{entry.title}</p>
                   <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.content}</p>
                   <p className="mt-3 text-xs uppercase tracking-wide text-gray-400">
                     {new Date(entry.createdAt).toLocaleDateString()}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
