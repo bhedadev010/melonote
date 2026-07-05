@@ -113,16 +113,38 @@ function Editor() {
     }
   }
 
-  function handleFinish() {
+  async function handleFinish() {
     const messages = blocks
       .filter((block) => block.role === 'user' || block.role === 'assistant')
       .map((block) => ({ role: block.role === 'assistant' ? 'assistant' : 'user', content: block.content.trim() }))
       .filter((message) => message.content.length > 0);
 
     const fullText = messages.map((message) => message.content).join('\n\n');
+    const content = fullText.trim();
 
-    localStorage.setItem('melonote-final', JSON.stringify({ messages, fullText }));
-    window.alert('Entry collected. Ready for the next step.');
+    if (!content) {
+      window.alert('Please write something before saving your entry.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await api.post('/journal/entries', {
+        title: 'Untitled entry',
+        content,
+        fullText,
+        messages,
+      });
+
+      localStorage.setItem('melonote-final', JSON.stringify({ messages, fullText }));
+      window.alert('Entry saved successfully.');
+      navigate('/journal', { replace: true });
+    } catch (error) {
+      console.error(error);
+      window.alert('Could not save your entry right now.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (

@@ -5,6 +5,7 @@ import api from '../services/api';
 function Journal() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,10 +15,18 @@ function Journal() {
       return;
     }
 
-    api.get('/auth/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(({ data }) => setUser(data.user))
+    Promise.all([
+      api.get('/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      api.get('/journal/entries', {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ])
+      .then(([userResponse, entriesResponse]) => {
+        setUser(userResponse.data.user);
+        setEntries(entriesResponse.data.entries || []);
+      })
       .catch(() => {
         localStorage.removeItem('melonote-token');
         localStorage.removeItem('melonote-user');
@@ -47,6 +56,25 @@ function Journal() {
           <Link to="/editor" className="rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
             Open journal editor
           </Link>
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-gray-800">Recent entries</h2>
+          {entries.length === 0 ? (
+            <p className="mt-3 text-sm text-gray-500">No saved entries yet.</p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {entries.map((entry) => (
+                <div key={entry._id} className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                  <p className="text-sm font-medium text-gray-700">{entry.title}</p>
+                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.content}</p>
+                  <p className="mt-3 text-xs uppercase tracking-wide text-gray-400">
+                    {new Date(entry.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
