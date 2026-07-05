@@ -6,6 +6,7 @@ function Editor() {
   const navigate = useNavigate();
   const location = useLocation();
   const [blocks, setBlocks] = useState([{ id: 'user-1', role: 'user', content: '' }]);
+  const [title, setTitle] = useState('');
   const [focusedBlock, setFocusedBlock] = useState('user-1');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -56,9 +57,10 @@ function Editor() {
                 const blockId = `${role}-${index + 1}`;
                 return [{ id: blockId, role, content: message.content }];
               })
-            : [{ id: 'user-1', role: 'user', content: data.entry.content || '' }];
+            : [{ id: 'user-1', role: 'user', content: data.entry.fullText || '' }];
 
           setBlocks(entryBlocks);
+          setTitle(data.entry.title || '');
           setFocusedBlock(entryBlocks[entryBlocks.length - 1]?.id || 'user-1');
         })
         .catch(() => {
@@ -159,29 +161,24 @@ function Editor() {
       .filter((message) => message.content.length > 0);
 
     const fullText = messages.map((message) => message.content).join('\n\n');
-    const content = fullText.trim();
 
-    if (!content) {
+    if (!fullText.trim()) {
       showToast('Please write something before saving.', 'info');
       return;
     }
 
     setSaving(true);
     try {
+      const payload = {
+        title: title.trim() || 'Untitled entry',
+        fullText: fullText.trim(),
+        messages,
+      };
+
       if (entryId) {
-        await api.put(`/journal/entries/${entryId}`, {
-          title: 'Untitled entry',
-          content,
-          fullText,
-          messages,
-        });
+        await api.put(`/journal/entries/${entryId}`, payload);
       } else {
-        await api.post('/journal/entries', {
-          title: 'Untitled entry',
-          content,
-          fullText,
-          messages,
-        });
+        await api.post('/journal/entries', payload);
       }
 
       localStorage.setItem('melonote-final', JSON.stringify({ messages, fullText }));
@@ -198,9 +195,16 @@ function Editor() {
     <div className="min-h-screen bg-white px-8 py-12 text-gray-900">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Journal Editor</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-tight text-slate-900">Write like you're on a blank page.</h1>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Entry title..."
+              readOnly={isReadOnly}
+              className="mt-2 w-full text-3xl font-semibold text-slate-900 bg-transparent border-none outline-none placeholder:text-slate-300"
+            />
           </div>
           <button
             onClick={handleFinish}

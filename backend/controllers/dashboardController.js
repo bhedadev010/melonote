@@ -10,7 +10,7 @@ async function getStats(req, res) {
       JournalEntry.countDocuments({ user: userId }),
       JournalEntry.countDocuments({ user: userId, createdAt: { $gte: startOfMonth } }),
       JournalEntry.find({ user: userId })
-        .select('emotions createdAt fullText content')
+        .select('emotions createdAt fullText title')
         .sort({ createdAt: -1 })
         .lean(),
     ]);
@@ -59,7 +59,7 @@ async function getStats(req, res) {
     const recentJournals = allEntries.slice(0, 5).map((entry) => ({
       _id: entry._id,
       title: entry.title || 'Untitled entry',
-      content: (entry.fullText || entry.content || '').slice(0, 150),
+      fullText: (entry.fullText || '').slice(0, 150),
       createdAt: entry.createdAt,
     }));
 

@@ -21,17 +21,16 @@ async function sparkIdea(req, res) {
 
 async function createEntry(req, res) {
   try {
-    const { title, content, fullText, messages } = req.body;
+    const { title, fullText, messages } = req.body;
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({ message: 'Entry content is required' });
+    if (!fullText || !fullText.trim()) {
+      return res.status(400).json({ message: 'Entry text is required' });
     }
 
-        const fullTextValue = fullText?.trim() || content.trim();
+    const fullTextValue = fullText.trim();
     const entry = await JournalEntry.create({
       user: req.user._id,
       title: title?.trim() || 'Untitled entry',
-      content: content.trim(),
       fullText: fullTextValue,
       messages: messages || [],
       emotions: [],
@@ -74,18 +73,17 @@ async function getEntry(req, res) {
 
 async function updateEntry(req, res) {
   try {
-    const { title, content, fullText, messages } = req.body;
+    const { title, fullText, messages } = req.body;
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({ message: 'Entry content is required' });
+    if (!fullText || !fullText.trim()) {
+      return res.status(400).json({ message: 'Entry text is required' });
     }
 
-    const fullTextValue = fullText?.trim() || content.trim();
+    const fullTextValue = fullText.trim();
     const entry = await JournalEntry.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
       {
         title: title?.trim() || 'Untitled entry',
-        content: content.trim(),
         fullText: fullTextValue,
         messages: messages || [],
       },

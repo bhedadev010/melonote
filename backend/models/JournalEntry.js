@@ -11,11 +11,6 @@ const journalEntrySchema = new mongoose.Schema({
     trim: true,
     default: 'Untitled entry',
   },
-  content: {
-    type: String,
-    required: [true, 'Entry content is required'],
-    trim: true,
-  },
   fullText: {
     type: String,
     trim: true,

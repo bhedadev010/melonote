@@ -98,7 +98,7 @@ function Dashboard() {
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <p className="text-sm font-medium text-gray-700">{entry.title}</p>
-                <p className="mt-1 text-sm text-gray-500 line-clamp-2">{entry.content}</p>
+                <p className="mt-1 text-sm text-gray-500 line-clamp-2">{entry.fullText}</p>
                 <p className="mt-2 text-xs text-gray-400">
                   {new Date(entry.createdAt).toLocaleDateString()}
                 </p>

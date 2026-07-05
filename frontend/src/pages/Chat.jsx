@@ -67,12 +67,7 @@ function Chat() {
         </div>
 
         <div className="mb-6 rounded-2xl bg-gray-50 p-4 h-96 overflow-y-auto chat-scroll">
-          {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-gray-400 animate-fade-in">Start a conversation…</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
+          <div className="space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -89,7 +84,6 @@ function Chat() {
                 </div>
               ))}
             </div>
-          )}
           {loading && (
             <div className="flex justify-start mt-4 animate-fade-in">
               <div className="bg-gray-200 rounded-2xl px-4 py-3 text-sm flex items-center gap-1.5">

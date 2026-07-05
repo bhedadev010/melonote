@@ -125,7 +125,7 @@ function Journal() {
                 >
                   <Link to={`/editor?entry=${entry._id}`} className="block">
                     <p className="text-sm font-medium text-gray-700">{entry.title}</p>
-                    <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.content}</p>
+                    <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.fullText}</p>
                     <p className="mt-3 text-xs uppercase tracking-wide text-gray-400">
                       {new Date(entry.createdAt).toLocaleDateString()}
                     </p>
