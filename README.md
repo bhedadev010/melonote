@@ -23,6 +23,12 @@ npm install
 npm run dev
 ```
 
+Add your Hugging Face API key to `backend/.env`:
+
+```dotenv
+HUGGING_FACE_API_KEY=your_hugging_face_api_key_here
+```
+
 The API runs at `http://localhost:5000`.
 
 ### Frontend

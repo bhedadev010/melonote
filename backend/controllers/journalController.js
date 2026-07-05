@@ -1,5 +1,6 @@
 const JournalEntry = require('../models/JournalEntry');
 const { buildSparkIdeaPrompt } = require('../utils/ai');
+const { processEntryAsync } = require('../services/journalProcessingService');
 
 async function sparkIdea(req, res) {
   try {
@@ -27,13 +28,18 @@ async function createEntry(req, res) {
       return res.status(400).json({ message: 'Entry content is required' });
     }
 
+        const fullTextValue = fullText?.trim() || content.trim();
     const entry = await JournalEntry.create({
       user: req.user._id,
       title: title?.trim() || 'Untitled entry',
       content: content.trim(),
-      fullText: fullText?.trim() || content.trim(),
+      fullText: fullTextValue,
       messages: messages || [],
+      emotions: [],
+      embedding: [],
     });
+
+    processEntryAsync(entry._id.toString(), fullTextValue);
 
     return res.status(201).json({ entry });
   } catch (error) {
@@ -75,16 +81,21 @@ async function updateEntry(req, res) {
       return res.status(400).json({ message: 'Entry content is required' });
     }
 
+    const fullTextValue = fullText?.trim() || content.trim();
     const entry = await JournalEntry.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
       {
         title: title?.trim() || 'Untitled entry',
         content: content.trim(),
-        fullText: fullText?.trim() || content.trim(),
+        fullText: fullTextValue,
         messages: messages || [],
       },
       { new: true },
     );
+
+    if (entry) {
+      processEntryAsync(entry._id.toString(), fullTextValue);
+    }
 
     if (!entry) {
       return res.status(404).json({ message: 'Entry not found' });
@@ -96,10 +107,25 @@ async function updateEntry(req, res) {
   }
 }
 
+async function deleteEntry(req, res) {
+  try {
+    const entry = await JournalEntry.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+
+    if (!entry) {
+      return res.status(404).json({ message: 'Entry not found' });
+    }
+
+    return res.json({ message: 'Entry deleted' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to delete journal entry', error: error.message });
+  }
+}
+
 module.exports = {
   sparkIdea,
   createEntry,
   getEntries,
   getEntry,
   updateEntry,
+  deleteEntry,
 };

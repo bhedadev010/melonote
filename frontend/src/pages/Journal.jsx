@@ -7,6 +7,7 @@ function Journal() {
   const [user, setUser] = useState(null);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('melonote-token');
@@ -34,6 +35,28 @@ function Journal() {
       })
       .finally(() => setLoading(false));
   }, [navigate]);
+
+  async function handleDeleteEntry(entryId, event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!window.confirm('Delete this saved entry?')) {
+      return;
+    }
+
+    setDeletingId(entryId);
+    try {
+      await api.delete(`/journal/entries/${entryId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('melonote-token')}` },
+      });
+      setEntries((current) => current.filter((entry) => entry._id !== entryId));
+    } catch (error) {
+      console.error(error);
+      window.alert('Could not delete this entry.');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   if (loading) {
     return <div className="max-w-4xl mx-auto px-6 py-16 text-gray-500">Loading your journal space…</div>;
@@ -65,13 +88,23 @@ function Journal() {
           ) : (
             <div className="mt-4 space-y-3">
               {entries.map((entry) => (
-                <Link key={entry._id} to={`/editor?entry=${entry._id}`} className="block rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-sky-200 hover:bg-sky-50">
-                  <p className="text-sm font-medium text-gray-700">{entry.title}</p>
-                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.content}</p>
-                  <p className="mt-3 text-xs uppercase tracking-wide text-gray-400">
-                    {new Date(entry.createdAt).toLocaleDateString()}
-                  </p>
-                </Link>
+                <div key={entry._id} className="rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-sky-200 hover:bg-sky-50">
+                  <Link to={`/editor?entry=${entry._id}`} className="block">
+                    <p className="text-sm font-medium text-gray-700">{entry.title}</p>
+                    <p className="mt-2 text-sm text-gray-600 line-clamp-3">{entry.content}</p>
+                    <p className="mt-3 text-xs uppercase tracking-wide text-gray-400">
+                      {new Date(entry.createdAt).toLocaleDateString()}
+                    </p>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={(event) => handleDeleteEntry(entry._id, event)}
+                    disabled={deletingId === entry._id}
+                    className="mt-3 rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition hover:bg-white disabled:opacity-50"
+                  >
+                    {deletingId === entry._id ? 'Deleting…' : 'Delete'}
+                  </button>
+                </div>
               ))}
             </div>
           )}

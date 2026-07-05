@@ -20,6 +20,18 @@ const journalEntrySchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  emotions: {
+    type: [
+      {
+        label: { type: String, trim: true },
+        score: { type: Number, min: 0, max: 1 },
+      },
+    ],
+    default: [],
+  },
+  embedding: {
+    type: [Number],
+  },
   messages: {
     type: [
       {
