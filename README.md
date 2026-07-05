@@ -23,10 +23,11 @@ npm install
 npm run dev
 ```
 
-Add your Hugging Face API key to `backend/.env`:
+Add your Gemini API key to `backend/.env`:
 
 ```dotenv
-HUGGING_FACE_API_KEY=your_hugging_face_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
 ```
 
 The API runs at `http://localhost:5000`.

@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Journal from './pages/Journal';
 import Editor from './pages/Editor';
+import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 
 function RootRoute() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/journal" element={<Journal />} />
         <Route path="/editor" element={<Editor />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

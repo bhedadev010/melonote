@@ -1,6 +1,7 @@
 const JournalEntry = require('../models/JournalEntry');
 const { buildSparkIdeaPrompt } = require('../utils/ai');
 const { processEntryAsync } = require('../services/journalProcessingService');
+const { chat } = require('../services/chatbotService');
 
 async function sparkIdea(req, res) {
   try {
@@ -128,4 +129,5 @@ module.exports = {
   getEntry,
   updateEntry,
   deleteEntry,
+  chat,
 };

@@ -79,6 +79,9 @@ function Journal() {
           <Link to="/editor" className="rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
             Open journal editor
           </Link>
+          <Link to="/chat" className="rounded-full border border-sky-500 px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50">
+            Chat with AI
+          </Link>
         </div>
 
         <div className="mt-8">
