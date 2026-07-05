@@ -1,5 +1,5 @@
 const JournalEntry = require('../models/JournalEntry');
-const { buildSparkIdeaPrompt } = require('../utils/ai');
+const { getRandomSparkQuestion } = require('../utils/ai');
 const { processEntryAsync } = require('../services/journalProcessingService');
 const { chat } = require('../services/chatbotService');
 
@@ -11,11 +11,9 @@ async function sparkIdea(req, res) {
       return res.status(400).json({ message: 'Journal text is required' });
     }
 
-    const prompt = buildSparkIdeaPrompt(text);
+    const idea = getRandomSparkQuestion();
 
-    const idea = `What part of this experience feels most important to you right now?`;
-
-    return res.json({ idea, prompt });
+    return res.json({ idea });
   } catch (error) {
     return res.status(500).json({ message: 'Spark idea failed', error: error.message });
   }

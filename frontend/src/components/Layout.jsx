@@ -24,16 +24,17 @@ function Layout() {
             {!hideHomeLink && (
               <Link to="/home" className="hover:text-sky-600">Home</Link>
             )}
-            {isAuthenticated ? (
-              <>
-                <Link to="/journal" className="hover:text-sky-600">Journal</Link>
-                <button
-                  onClick={handleLogout}
-                  className="rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
-                >
-                  Logout
-                </button>
-              </>
+              {isAuthenticated ? (
+                <>
+                  <Link to="/journal" className="hover:text-sky-600">Journal</Link>
+                  <Link to="/dashboard" className="hover:text-sky-600">Dashboard</Link>
+                  <button
+                    onClick={handleLogout}
+                    className="rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    Logout
+                  </button>
+                </>
             ) : (
               <Link to="/auth" className="hover:text-sky-600">Sign in</Link>
             )}
