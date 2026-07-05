@@ -40,6 +40,33 @@ function Editor() {
     setBlocks((current) => current.map((block) => (block.id === id ? { ...block, content } : block)));
   }
 
+  function handleDeleteBlock(id) {
+    const blockIndex = blocks.findIndex((block) => block.id === id);
+    const previousBlock = blocks[blockIndex - 1];
+    const nextBlock = blocks[blockIndex + 1];
+
+    setBlocks((current) => {
+      if (previousBlock?.role === 'user' && nextBlock?.role === 'user') {
+        const mergedContent = [previousBlock.content, nextBlock.content]
+          .filter((content) => content && content.trim())
+          .join('\n\n');
+
+        return current
+          .filter((block) => block.id !== id && block.id !== nextBlock.id)
+          .map((block) => (block.id === previousBlock.id ? { ...block, content: mergedContent } : block));
+      }
+
+      return current.filter((block) => block.id !== id);
+    });
+
+    if (previousBlock?.role === 'user') {
+      setFocusedBlock(previousBlock.id);
+      setTimeout(() => {
+        focusTextareaAtEnd(blockRefs.current[previousBlock.id]);
+      }, 0);
+    }
+  }
+
   function getFocusedUserBlock() {
     const block = blocks.find((item) => item.id === focusedBlock && item.role === 'user');
     if (block) return block;
@@ -116,8 +143,11 @@ function Editor() {
         </div>
 
         <div className="space-y-6">
-              {blocks.map((block) => (
-            <div key={block.id} className={block.role === 'assistant' ? 'rounded-2xl bg-slate-50 px-3 py-2 text-slate-700 shadow-sm transition-all duration-300 max-w-3xl' : ''}>
+          {blocks.map((block) => (
+            <div
+              key={block.id}
+              className={block.role === 'assistant' ? 'group relative max-w-3xl rounded-2xl bg-slate-50 px-3 py-2 text-slate-700 shadow-sm transition-all duration-300' : ''}
+            >
               {block.role === 'user' ? (
                 <textarea
                   ref={(node) => {
@@ -141,6 +171,19 @@ function Editor() {
                 <div className="rounded-2xl bg-slate-50 px-1.5 py-0.5 text-xl leading-8 text-slate-800">
                   {block.content}
                 </div>
+              )}
+
+              {block.role === 'assistant' && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteBlock(block.id)}
+                  aria-label="Delete generated question"
+                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 opacity-0 transition hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0h10l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L6 7z" />
+                  </svg>
+                </button>
               )}
             </div>
           ))}
