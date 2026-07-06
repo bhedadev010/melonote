@@ -105,6 +105,33 @@ function Home() {
         </button>
       </div>
 
+      {/* Top-right user menu */}
+      <div className="fixed top-6 right-6 z-50">
+        <div className="relative group">
+          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10 hover:text-white/90 hover:scale-105">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.25h15.002c.966 0 1.75-.784 1.75-1.75v-7.5c0-.966-.784-1.75-1.75-1.75H4.501c-.966 0-1.75.784-1.75 1.75v7.5c0 .966.784 1.75 1.75 1.75z" />
+            </svg>
+          </button>
+          <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-white/10 bg-[#0a0a0f]/95 backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl">
+            <div className="p-3 border-b border-white/10">
+              <p className="text-sm font-medium text-white/90">Account</p>
+              <p className="text-xs text-white/40 mt-0.5">Manage your account</p>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('melonote-token');
+                localStorage.removeItem('melonote-user');
+                navigate('/auth', { replace: true });
+              }}
+              className="w-full text-left px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white/90 transition-all rounded-b-2xl"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
         <motion.div
@@ -144,6 +171,16 @@ function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
               <span>View Past Journals</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/chat')}
+              className="group w-full rounded-2xl border border-white/[0.12] bg-white/[0.04] px-6 py-4 text-sm font-medium text-white/70 backdrop-blur-sm transition-all hover:bg-white/[0.08] hover:border-white/[0.2] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 013 21V12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+              </svg>
+              <span>Chat with AI</span>
             </button>
           </motion.div>
         </motion.div>
@@ -231,31 +268,6 @@ function Home() {
             </motion.div>
           )}
 
-          {/* Recent Journals */}
-          {stats.recentJournals.length > 0 && (
-            <motion.div variants={fadeUp} custom={5}>
-              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wide mb-4">Recent Journals</h3>
-              <div className="space-y-3">
-                {stats.recentJournals.map((entry, index) => (
-                  <motion.div
-                    key={entry._id}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.08 }}
-                    className="glass glass-hover rounded-2xl p-5 sm:p-6 cursor-pointer"
-                    onClick={() => navigate(`/editor/${entry._id}`)}
-                  >
-                    <p className="text-sm font-medium text-white/90 mb-2">{entry.title}</p>
-                    <p className="text-sm text-white/40 line-clamp-2 mb-3">{entry.fullText}</p>
-                    <p className="text-xs text-white/20">
-                      {new Date(entry.createdAt).toLocaleDateString()}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
         </motion.div>
       </section>
     </>

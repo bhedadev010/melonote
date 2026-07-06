@@ -143,7 +143,7 @@ function Landing() {
           >
             <button
               onClick={() => navigate('/auth')}
-              className="group relative inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-[#0a0a0f] transition-all hover:scale-105 active:scale-95"
+              className="group relative inline-flex items-center gap-2 rounded-full bg-white px-10 py-3.5 text-sm font-semibold text-[#0a0a0f] transition-all hover:scale-105 active:scale-95"
             >
               <span>Get started</span>
               <svg
@@ -155,12 +155,6 @@ function Landing() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.25 8h9.5m-4-4l4 4-4 4" />
               </svg>
-            </button>
-            <button
-              onClick={() => navigate('/auth')}
-              className="group inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-7 py-3.5 text-sm font-medium text-white/70 backdrop-blur-sm transition-all hover:bg-white/[0.08] hover:border-white/[0.2] hover:scale-105 active:scale-95"
-            >
-              Sign in
             </button>
           </motion.div>
 
