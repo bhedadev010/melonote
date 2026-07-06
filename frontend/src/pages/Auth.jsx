@@ -22,6 +22,7 @@ const stagger = {
 
 function Auth() {
   const navigate = useNavigate();
+  const isAuthenticated = Boolean(localStorage.getItem('melonote-token'));
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
@@ -63,7 +64,12 @@ function Auth() {
 
       {/* Top-left logo */}
       <div className="fixed top-6 left-6 z-50">
-        <span className="text-2xl font-semibold text-gradient tracking-tight">Melonote</span>
+        <button
+          onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
+          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+        >
+          Melonote
+        </button>
       </div>
 
       <div className="relative min-h-screen flex items-center justify-center px-4 py-12">

@@ -1,6 +1,24 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] },
+  }),
+};
+
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
+  },
+};
 
 function Editor() {
   const navigate = useNavigate();
@@ -15,6 +33,7 @@ function Editor() {
   const [toast, setToast] = useState(null);
   const blockRefs = useRef({});
   const token = useMemo(() => localStorage.getItem('melonote-token'), []);
+  const isAuthenticated = Boolean(localStorage.getItem('melonote-token'));
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -192,107 +211,148 @@ function Editor() {
   }
 
   return (
-    <div className="min-h-screen bg-white px-8 py-12 text-gray-900">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Journal Editor</p>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Entry title..."
-              readOnly={isReadOnly}
-              className="mt-2 w-full text-3xl font-semibold text-slate-900 bg-transparent border-none outline-none placeholder:text-slate-300"
-            />
-          </div>
-          <button
-            onClick={handleFinish}
-            disabled={saving || isReadOnly}
-            className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-slate-700 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-          >
-            {saving ? 'Saving…' : isReadOnly ? 'Read only' : 'Finish entry'}
-          </button>
-        </div>
+    <>
+      {/* Background layers */}
+      <div className="landing-bg" />
+      <div className="landing-grid" />
+      <div className="landing-noise" />
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
 
-        <div className="space-y-6">
-          {blocks.map((block, index) => (
-            <div
-              key={block.id}
-              className={`${
-                block.role === 'assistant'
-                  ? 'group relative max-w-3xl rounded-2xl bg-slate-50 px-3 py-2 text-slate-700 shadow-sm transition-all duration-300 animate-slide-in-left'
-                  : 'animate-fade-in'
-              }`}
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              {block.role === 'user' ? (
-                <textarea
-                  ref={(node) => {
-                    if (node) {
-                      blockRefs.current[block.id] = node;
-                      resizeTextarea(node);
-                    }
-                  }}
-                  value={block.content}
-                  onChange={(event) => {
-                    if (isReadOnly) return;
-                    updateBlock(block.id, event.target.value);
-                    resizeTextarea(event.target);
-                  }}
-                  onFocus={() => setFocusedBlock(block.id)}
-                  placeholder="Start writing here..."
-                  spellCheck
-                  rows={1}
-                  readOnly={isReadOnly}
-                  className="w-full resize-none bg-transparent text-xl leading-8 text-slate-900 outline-none placeholder:text-slate-400 transition-all duration-200 focus:pl-2"
-                />
-              ) : (
-                <div className="rounded-2xl bg-slate-50 px-1.5 py-0.5 text-xl leading-8 text-slate-800">
-                  {block.content}
-                </div>
-              )}
+      {/* Top-left logo */}
+      <div className="fixed top-6 left-6 z-50">
+        <button
+          onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
+          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+        >
+          Melonote
+        </button>
+      </div>
 
-              {block.role === 'assistant' && !isReadOnly && (
-                <button
-                  type="button"
-                  onClick={() => handleDeleteBlock(block.id)}
-                  aria-label="Delete generated question"
-                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 opacity-0 transition-all hover:bg-slate-100 hover:text-slate-700 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none hover:scale-110"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0h10l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L6 7z" />
-                  </svg>
-                </button>
-              )}
+      <div className="relative min-h-screen px-4 pt-24 pb-12">
+        <motion.div
+          className="mx-auto max-w-3xl"
+          initial="hidden"
+          animate="visible"
+          variants={stagger}
+        >
+          {/* Header */}
+          <motion.div variants={fadeUp} custom={0} className="mb-10 flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/30 mb-2">Journal Editor</p>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Entry title..."
+                readOnly={isReadOnly}
+                className="w-full bg-transparent text-2xl sm:text-3xl font-semibold text-white/80 outline-none placeholder:text-white/20"
+              />
             </div>
-          ))}
-        </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSparkIdea}
+                disabled={loading || isReadOnly}
+                className="rounded-full border border-white/[0.12] bg-white/[0.04] px-5 py-3 text-sm font-medium text-white/70 backdrop-blur-sm transition-all hover:bg-white/[0.08] hover:border-white/[0.2] hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {loading ? 'Thinking…' : 'Spark Idea'}
+              </button>
+              <button
+                onClick={handleFinish}
+                disabled={saving || isReadOnly}
+                className="group rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0a0a0f] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+              >
+                {saving ? 'Saving…' : isReadOnly ? 'Read only' : 'Finish entry'}
+                {!saving && !isReadOnly && (
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.25 8h9.5m-4-4l4 4-4 4" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </motion.div>
 
-        <div className="mt-10 flex flex-wrap items-center gap-4">
-          <button
-            onClick={handleSparkIdea}
-            disabled={loading || isReadOnly}
-            className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-slate-700 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-          >
-            {loading ? 'Thinking…' : 'Spark Idea'}
-          </button>
-        </div>
+          {/* Blocks */}
+          <motion.div variants={fadeUp} custom={1} className="space-y-6">
+            <AnimatePresence>
+              {blocks.map((block, index) => (
+                <motion.div
+                  key={block.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.3 }}
+                  className={`relative ${
+                    block.role === 'assistant'
+                      ? 'glass rounded-2xl p-5 sm:p-6 border-l-2 border-l-sky-400/50'
+                      : ''
+                  }`}
+                >
+                  {block.role === 'user' ? (
+                    <textarea
+                      ref={(node) => {
+                        if (node) {
+                          blockRefs.current[block.id] = node;
+                          resizeTextarea(node);
+                        }
+                      }}
+                      value={block.content}
+                      onChange={(event) => {
+                        if (isReadOnly) return;
+                        updateBlock(block.id, event.target.value);
+                        resizeTextarea(event.target);
+                      }}
+                      onFocus={() => setFocusedBlock(block.id)}
+                      placeholder="Start writing here..."
+                      spellCheck
+                      rows={1}
+                      readOnly={isReadOnly}
+                      className="w-full resize-none bg-transparent text-lg sm:text-xl leading-8 text-white/80 outline-none placeholder:text-white/20 transition-all duration-200"
+                    />
+                  ) : (
+                    <div className="text-lg sm:text-xl leading-8 text-white/70">
+                      {block.content}
+                    </div>
+                  )}
+
+                  {block.role === 'assistant' && !isReadOnly && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteBlock(block.id)}
+                      aria-label="Delete generated question"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 opacity-0 transition-all hover:bg-white/10 hover:text-white/80 hover:scale-110 group-hover:opacity-100"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-8 0h10l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L6 7z" />
+                      </svg>
+                    </button>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* Toast notification */}
-      {toast && (
-        <div
-          className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 rounded-2xl px-6 py-3 text-sm font-medium shadow-lg animate-slide-up ${
-            toast.type === 'error' ? 'bg-red-500 text-white' :
-            toast.type === 'info' ? 'bg-slate-800 text-white' :
-            'bg-emerald-500 text-white'
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-    </div>
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 rounded-2xl px-6 py-3 text-sm font-medium shadow-lg ${
+              toast.type === 'error' ? 'bg-red-500/90 text-white' :
+              toast.type === 'info' ? 'bg-white/10 text-white/80 border border-white/10' :
+              'bg-emerald-500/90 text-white'
+            }`}
+          >
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

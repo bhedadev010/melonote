@@ -62,6 +62,7 @@ const features = [
 
 function Landing() {
   const navigate = useNavigate();
+  const isAuthenticated = Boolean(localStorage.getItem('melonote-token'));
 
   return (
     <>
@@ -75,7 +76,12 @@ function Landing() {
 
       {/* Top-left logo */}
       <div className="fixed top-6 left-6 z-50">
-        <span className="text-2xl font-semibold text-gradient tracking-tight">Melonote</span>
+        <button
+          onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
+          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+        >
+          Melonote
+        </button>
       </div>
 
       {/* Hero Section */}

@@ -5,7 +5,7 @@ function Layout() {
   const navigate = useNavigate();
   const token = localStorage.getItem('melonote-token');
   const isAuthenticated = Boolean(token);
-  const isPublicPage = location.pathname === '/landing' || location.pathname === '/auth';
+  const isPublicPage = location.pathname === '/landing' || location.pathname === '/auth' || location.pathname === '/home' || location.pathname === '/editor';
   const hideHomeLink = isPublicPage;
 
   function handleLogout() {
@@ -49,14 +49,6 @@ function Layout() {
                   }`}
                 >
                   Journal
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className={`transition-all hover:text-sky-600 ${
-                    isActive('/dashboard') ? 'text-sky-600 font-medium' : ''
-                  }`}
-                >
-                  Dashboard
                 </Link>
                 <Link
                   to="/chat"
