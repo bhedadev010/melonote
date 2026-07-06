@@ -12,7 +12,7 @@ import NotFound from './pages/NotFound';
 function RootRoute() {
   const token = localStorage.getItem('melonote-token');
 
-  return token ? <Navigate to="/journal" replace /> : <Navigate to="/landing" replace />;
+  return token ? <Navigate to="/home" replace /> : <Navigate to="/landing" replace />;
 }
 
 function App() {

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Instrument+Serif:ital@0;1&family=Italiana&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -196,4 +197,19 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Instrument Serif font */
+.font-instrument-serif {
+  font-family: 'Instrument Serif', serif;
+}
+
+/* Italiana font */
+.font-italiana {
+  font-family: 'Italiana', serif;
+}
+
+/* Geist Pixel font */
+.font-geist-pixel {
+  font-family: 'Geist Pixel', monospace;
 }

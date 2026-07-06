@@ -11,7 +11,7 @@ function Layout() {
   function handleLogout() {
     localStorage.removeItem('melonote-token');
     localStorage.removeItem('melonote-user');
-    navigate('/auth', { replace: true });
+    navigate('/landing', { replace: true });
   }
 
   function isActive(path) {

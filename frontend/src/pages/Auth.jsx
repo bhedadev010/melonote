@@ -31,9 +31,9 @@ function Auth() {
   useEffect(() => {
     const token = localStorage.getItem('melonote-token');
     if (token) {
-      navigate('/journal', { replace: true });
-    }
-  }, [navigate]);
+          navigate('/home', { replace: true });
+        }
+      }, [navigate]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -45,7 +45,7 @@ function Auth() {
       const { data } = await api.post(endpoint, form);
       localStorage.setItem('melonote-token', data.token);
       localStorage.setItem('melonote-user', JSON.stringify(data.user));
-      navigate('/journal', { replace: true });
+      navigate('/home', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
     } finally {
@@ -65,10 +65,12 @@ function Auth() {
       {/* Top-left logo */}
       <div className="fixed top-6 left-6 z-50">
         <button
-          onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
-          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+          type="button"
+          onClick={() => navigate('/landing', { replace: true })}
+          className="text-2xl font-semibold tracking-tight transition-opacity hover:opacity-80 tracking-wide"
+          style={{ fontFamily: 'system-ui', color: '#cce6ff' }}
         >
-          Melonote
+          melonote
         </button>
       </div>
 
@@ -79,12 +81,7 @@ function Auth() {
           animate="visible"
           variants={stagger}
         >
-          {/* Logo */}
-          <motion.div variants={fadeUp} custom={0} className="text-center mb-8">
-            <h1 className="text-2xl font-light tracking-tight text-white/80">
-              <span className="text-gradient font-medium">Melonote</span>
-            </h1>
-          </motion.div>
+         
 
           {/* Card */}
           <motion.div

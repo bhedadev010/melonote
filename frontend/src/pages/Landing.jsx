@@ -78,9 +78,10 @@ function Landing() {
       <div className="fixed top-6 left-6 z-50">
         <button
           onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
-          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+          className="text-2xl font-semibold tracking-tight transition-opacity hover:opacity-80 tracking-wide"
+          style={{ fontFamily: 'system-ui', color: '#cce6ff' }}
         >
-          Melonote
+          melonote
         </button>
       </div>
 
@@ -123,7 +124,7 @@ function Landing() {
           >
             <span className="text-white/90">Write freely.</span>
             <br />
-            <span className="text-gradient">Reflect deeply.</span>
+            <span className="text-gradient font-geist-pixel">Reflect deeply.</span>
           </motion.h1>
 
           {/* Subtitle */}

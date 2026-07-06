@@ -94,7 +94,7 @@ function Journal() {
         <div className="orb orb-3" />
 
         <div className="fixed top-6 left-6 z-50">
-          <span className="text-2xl font-semibold text-gradient tracking-tight">Melonote</span>
+          <span className="text-2xl font-semibold tracking-tight tracking-wide" style={{ fontFamily: 'system-ui', color: '#cce6ff' }}>melonote</span>
         </div>
 
         <div className="relative min-h-screen px-4 pt-24 pb-12">
@@ -126,9 +126,10 @@ function Journal() {
       <div className="fixed top-6 left-6 z-50">
         <button
           onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
-          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+          className="text-2xl font-semibold tracking-tight transition-opacity hover:opacity-80 tracking-wide"
+          style={{ fontFamily: 'system-ui', color: '#cce6ff' }}
         >
-          Melonote
+          melonote
         </button>
       </div>
 

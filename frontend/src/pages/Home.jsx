@@ -62,7 +62,7 @@ function Home() {
         <div className="orb orb-3" />
 
         <div className="fixed top-6 left-6 z-50">
-          <span className="text-2xl font-semibold text-gradient tracking-tight">Melonote</span>
+          <span className="text-2xl font-semibold tracking-tight tracking-wide" style={{ fontFamily: 'system-ui', color: '#cce6ff' }}>melonote</span>
         </div>
 
         <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
@@ -99,9 +99,10 @@ function Home() {
       <div className="fixed top-6 left-6 z-50">
         <button
           onClick={() => navigate(isAuthenticated ? '/home' : '/landing')}
-          className="text-2xl font-semibold text-gradient tracking-tight transition-opacity hover:opacity-80"
+          className="text-2xl font-semibold tracking-tight transition-opacity hover:opacity-80 tracking-wide"
+          style={{ fontFamily: 'system-ui', color: '#cce6ff' }}
         >
-          Melonote
+          melonote
         </button>
       </div>
 
@@ -122,7 +123,7 @@ function Home() {
               onClick={() => {
                 localStorage.removeItem('melonote-token');
                 localStorage.removeItem('melonote-user');
-                navigate('/auth', { replace: true });
+                navigate('/landing', { replace: true });
               }}
               className="w-full text-left px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white/90 transition-all rounded-b-2xl"
             >
@@ -141,7 +142,7 @@ function Home() {
           variants={stagger}
         >
           <motion.div variants={fadeUp} custom={0} className="mb-10">
-            <h1 className="text-4xl sm:text-5xl font-light text-white/80 mb-3">
+            <h1 className="text-10xl sm:text-6xl font-medium text-white/80 mb-3 " style={{ fontFamily: 'system-ui', color: '#cce6ff' }}>
               Welcome back
             </h1>
             <p className="text-base text-white/40">
