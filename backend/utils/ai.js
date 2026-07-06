@@ -21,6 +21,19 @@ function getRandomSparkQuestion() {
   return SPARK_QUESTIONS[index];
 }
 
+function buildSparkIdeaPrompt(journalText) {
+  return [
+    'Read the journal context below and suggest one reflective question.',
+    'Keep it gentle, specific, and useful for deeper journaling.',
+    '',
+    'Journal context:',
+    journalText,
+    '',
+    'Return only one question.',
+  ].join('\n');
+}
+
 module.exports = {
+  buildSparkIdeaPrompt,
   getRandomSparkQuestion,
 };

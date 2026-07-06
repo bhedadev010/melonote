@@ -46,20 +46,25 @@ function Chat() {
   async function handleSendMessage(event) {
     event.preventDefault();
 
-    if (!inputValue.trim()) return;
+    const question = inputValue.trim();
 
-    const userMessage = { role: 'user', content: inputValue.trim() };
+    if (!question) return;
+
+    const userMessage = { role: 'user', content: question };
     setMessages((current) => [...current, userMessage]);
     setInputValue('');
     setLoading(true);
 
     try {
       const token = localStorage.getItem('melonote-token');
-      const { data } = await api.post('/journal/chat', { question: inputValue.trim() }, {
+      const { data } = await api.post('/journal/chat', { question }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const assistantMessage = { role: 'assistant', content: data.answer };
+      const assistantMessage = {
+        role: 'assistant',
+        content: data?.answer || 'I could not generate a response for that. Please try asking again.',
+      };
       setMessages((current) => [...current, assistantMessage]);
     } catch (error) {
       console.error(error);
@@ -130,7 +135,7 @@ function Chat() {
                       transition={{ duration: 0.3 }}
                       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      <div className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed sm:max-w-[80%] ${
                         message.role === 'user'
                           ? 'bg-white/10 text-white/90 rounded-br-md'
                           : 'glass rounded-bl-md border-l-2 border-l-sky-400/50 text-white/70'
@@ -161,7 +166,7 @@ function Chat() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask a question about your journals... (Enter to send, Shift+Enter for new line)"
                 rows={2}
-                className="flex-1 rounded-2xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 text-sm text-white/80 outline-none transition-all placeholder:text-white/20 focus:border-white/[0.2] focus:bg-white/[0.06] resize-none"
+                className="min-w-0 flex-1 resize-none rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white/80 outline-none transition-all placeholder:text-white/20 focus:border-white/[0.2] focus:bg-white/[0.06]"
                 disabled={loading}
               />
               <button
@@ -169,7 +174,7 @@ function Chat() {
                 disabled={loading || !inputValue.trim()}
                 className="group rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0a0a0f] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 self-end flex items-center gap-2"
               >
-                {loading ? 'Sending…' : 'Send'}
+                {loading ? 'Sending...' : 'Send'}
                 {!loading && (
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.25 8h9.5m-4-4l4 4-4 4" />
