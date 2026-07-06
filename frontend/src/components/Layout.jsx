@@ -5,7 +5,7 @@ function Layout() {
   const navigate = useNavigate();
   const token = localStorage.getItem('melonote-token');
   const isAuthenticated = Boolean(token);
-  const isPublicPage = location.pathname === '/landing' || location.pathname === '/auth' || location.pathname === '/home' || location.pathname === '/editor';
+  const isPublicPage = location.pathname === '/landing' || location.pathname === '/auth' || location.pathname === '/home' || location.pathname === '/editor' || location.pathname === '/chat';
   const hideHomeLink = isPublicPage;
 
   function handleLogout() {
