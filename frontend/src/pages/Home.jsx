@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../services/api';
 
@@ -34,6 +34,8 @@ function Home() {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const isAuthenticated = Boolean(localStorage.getItem('melonote-token'));
 
   useEffect(() => {
@@ -43,10 +45,18 @@ function Home() {
       return;
     }
 
-    api.get('/dashboard/stats', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(({ data }) => setStats(data))
+    Promise.all([
+      api.get('/dashboard/stats', {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      api.get('/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ])
+      .then(([statsResponse, userResponse]) => {
+        setStats(statsResponse.data);
+        setUser(userResponse.data.user);
+      })
       .catch(() => navigate('/auth', { replace: true }))
       .finally(() => setLoading(false));
   }, [navigate]);
@@ -115,10 +125,12 @@ function Home() {
             </svg>
           </button>
           <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-white/10 bg-[#0a0a0f]/95 backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl">
-            <div className="p-3 border-b border-white/10">
-              <p className="text-sm font-medium text-white/90">Account</p>
-              <p className="text-xs text-white/40 mt-0.5">Manage your account</p>
-            </div>
+            <button
+              onClick={() => setShowAccountModal(true)}
+              className="w-full text-left px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white/90 transition-all rounded-t-2xl border-b border-white/10"
+            >
+              Account
+            </button>
             <button
               onClick={() => {
                 localStorage.removeItem('melonote-token');
@@ -271,6 +283,62 @@ function Home() {
 
         </motion.div>
       </section>
+
+      {/* Account Modal */}
+      <AnimatePresence>
+        {showAccountModal && user && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+            onClick={() => setShowAccountModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0a0a0f]/95 backdrop-blur-xl p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-lg font-semibold text-white/90">Account details</h3>
+                <button
+                  onClick={() => setShowAccountModal(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 transition-all hover:bg-white/10 hover:text-white/80"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-medium text-white/40 uppercase tracking-wide mb-1.5 block">Name</label>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 text-sm text-white/80">
+                    {user.name || '—'}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-white/40 uppercase tracking-wide mb-1.5 block">Email</label>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 text-sm text-white/80">
+                    {user.email || '—'}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowAccountModal(false)}
+                className="mt-5 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-white/70 transition-all hover:bg-white/[0.08] hover:border-white/[0.2]"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

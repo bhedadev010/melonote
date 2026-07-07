@@ -284,7 +284,7 @@ function Editor() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.3 }}
-                  className={`relative ${
+                  className={`relative group ${
                     block.role === 'assistant'
                       ? 'glass rounded-2xl p-5 sm:p-6 border-l-2 border-l-sky-400/50'
                       : ''
